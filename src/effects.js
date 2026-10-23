@@ -3,7 +3,7 @@ window.createTokenutEffects = function (back, front) {
   const bg = back.getContext('2d'), fg = front.getContext('2d');
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
   const colors = ['#ffe6a3','#fff1b5','#ffaaa8','#ffd56b','#d5f5ff','#81eaff','#ffcaff'];
-  const counts = [0,3,32,36,32,48,88];
+  const counts = [0,3,28,44,22,48,88];
   const motes = Array.from({length:104}, (_,i)=>({phase:i*2.39996, radius:46+(i*17%32), speed:.3+(i%7)*.07, size:.7+(i%4)*.35}));
   let stage=0, reduced=false, handle=0, last=0;
   function clear() { bg.clearRect(0,0,280,264); fg.clearRect(0,0,280,264); }
@@ -11,36 +11,55 @@ window.createTokenutEffects = function (back, front) {
     bg.globalAlpha=alpha; bg.fillStyle=color; bg.beginPath();
     points.forEach(([x,y],i)=>i?bg.lineTo(x,y):bg.moveTo(x,y)); bg.closePath(); bg.fill(); bg.globalAlpha=1;
   }
+  const pet=document.getElementById('pet');
+  let edge=[], surface=[];
+  function samplePet() {
+    if(!pet.complete || !pet.naturalWidth) return;
+    const mask=document.createElement('canvas'); mask.width=142; mask.height=142;
+    const c=mask.getContext('2d',{willReadFrequently:true});
+    const scale=Math.min(142/pet.naturalWidth,142/pet.naturalHeight);
+    const w=pet.naturalWidth*scale,h=pet.naturalHeight*scale;
+    c.drawImage(pet,(142-w)/2,(142-h)/2,w,h);
+    const data=c.getImageData(0,0,142,142).data; edge=[];surface=[];
+    for(let y=10;y<133;y+=4) {
+      let first=-1,last=-1;
+      for(let x=3;x<139;x++) if(data[(y*142+x)*4+3]>210) {
+        if(first<0)first=x;last=x;
+        if(x%7===0)surface.push({x:69+x,y:22+y});
+      }
+      if(first>=0){edge.push({x:69+first,y:22+y,side:-1});edge.push({x:69+last,y:22+y,side:1});}
+    }
+  }
+  pet.addEventListener('load',()=>{samplePet();refresh();});samplePet();
+  function sparkle(context,x,y,r,color,alpha) {
+    context.save();context.globalAlpha=alpha;context.fillStyle=color;
+    context.beginPath();context.moveTo(x,y-r);context.quadraticCurveTo(x+.45,y-.45,x+r*.65,y);
+    context.quadraticCurveTo(x+.45,y+.45,x,y+r);context.quadraticCurveTo(x-.45,y+.45,x-r*.65,y);
+    context.quadraticCurveTo(x-.45,y-.45,x,y-r);context.fill();context.restore();
+  }
   function atmosphere(t) {
-    if(stage===2) {
-      // Uneven tongues of flame rise and flare out from the sides, never a halo.
-      for(let i=0;i<13;i++) {
-        const x=65+i*12.5, base=155-Math.abs(x-140)*.18;
-        const h=30+(i*19%45)+Math.sin(t*2.8+i)*9;
-        const lean=(x-140)*.2+Math.sin(t*2+i)*7;
-        const g=bg.createLinearGradient(x,base,x+lean,base-h);
-        g.addColorStop(0,'#e6381620');g.addColorStop(.55,'#ff591b99');g.addColorStop(1,'#ffd14b08');
-        bg.fillStyle=g;bg.beginPath();bg.moveTo(x-11,base);
-        bg.bezierCurveTo(x-15,base-h*.4,x+lean+12,base-h*.55,x+lean,base-h);
-        bg.bezierCurveTo(x+lean-3,base-h*.48,x+18,base-h*.38,x+11,base);bg.fill();
+    if(stage===2 && edge.length) {
+      // Short translucent heat wisps follow the actual sprite silhouette.
+      for(let i=0;i<18;i++) {
+        const p=edge[(i*7)%edge.length], wave=.5+.5*Math.sin(t*2.1+i*1.8);
+        const h=9+wave*14, x=p.x+p.side*2, y=p.y;
+        const g=bg.createLinearGradient(x,y,x+p.side*8,y-h);
+        g.addColorStop(0,'#ff420000');g.addColorStop(.35,'#ff632a88');g.addColorStop(.7,'#ffc35a99');g.addColorStop(1,'#ffad3600');
+        bg.strokeStyle=g;bg.lineWidth=1.5+wave;bg.lineCap='round';bg.beginPath();bg.moveTo(x,y);
+        bg.bezierCurveTo(x+p.side*11,y-4,x-p.side*4,y-h*.7,x+p.side*6,y-h);bg.stroke();
       }
-    } else if(stage===3) {
-      // Tall, angular gold shafts form a crown silhouette.
-      for(let i=0;i<9;i++) {
-        const x=62+i*19.5, top=18+(i*23%50)+Math.sin(t*.8+i)*5;
-        const g=bg.createLinearGradient(x,163,x,top);g.addColorStop(0,'#d3921205');g.addColorStop(.65,'#ffc74666');g.addColorStop(1,'#fff0ad00');
-        polygon([[x-8,161],[x-3,top+15],[x,top],[x+4,top+17],[x+8,161]],g,.8);
-        bg.strokeStyle='#ffe59a';bg.globalAlpha=.45;bg.beginPath();bg.moveTo(x,top+15);bg.lineTo(x,top+40);bg.stroke();bg.globalAlpha=1;
+    } else if(stage===3 && edge.length) {
+      // Gold stays metallic: tiny warm motes and isolated specular highlights.
+      for(let i=0;i<7;i++) {
+        const p=edge[(i*11)%edge.length];
+        sparkle(bg,p.x+p.side*5,p.y,2.5,'#ffe6a1',.25+.2*Math.sin(t+i)**2);
       }
-    } else if(stage===4) {
-      // Asymmetric crystalline shards: faceted planes, no enclosing circle.
-      const shards=[[67,139,-.4,30],[78,88,-.6,23],[96,36,-.2,17],[194,49,.45,27],[214,103,.6,34],[200,151,.35,23]];
-      shards.forEach(([x,y,angle,h],i)=>{
-        bg.save();bg.translate(x,y);bg.rotate(angle);
-        polygon([[-6,12],[-8,-h*.35],[0,-h],[8,-h*.3],[5,12]],i%2?'#c4b7ff':'#9fe6ff',.23);
-        polygon([[0,12],[0,-h],[8,-h*.3]],'#ecfbff',.5);
-        bg.strokeStyle='#daffff';bg.globalAlpha=.7;bg.beginPath();bg.moveTo(-6,12);bg.lineTo(0,-h);bg.lineTo(8,-h*.3);bg.stroke();bg.restore();
-      });
+    } else if(stage===4 && surface.length) {
+      // Sparse white-blue scintillation, with no large floating geometry.
+      for(let i=0;i<5;i++) {
+        const p=edge[(i*17)%edge.length];
+        sparkle(bg,p.x+p.side*4,p.y,3.5,i%2?'#e9dfff':'#d2f6ff',.3);
+      }
     } else if(stage===5) {
       // Broken angular circuit paths and traveling pulses evoke quantum jumps.
       for(let side of [-1,1]) for(let j=0;j<3;j++) {
@@ -67,14 +86,15 @@ window.createTokenutEffects = function (back, front) {
       let x,y,color=colors[stage];
       if(stage===6) {const r=30+life*60;x=140+Math.cos(p.phase)*r;y=91+Math.sin(p.phase)*r*.78;color=`hsl(${i*29+t*25} 100% 76%)`;}
       else if(stage===5) {x=140+(i%2?1:-1)*(48+(i%5)*7);y=22+life*138;}
-      else if(stage===4) {x=140+Math.sin(p.phase)*p.radius;y=88+Math.cos(p.phase*1.3)*60;}
+      else if(stage===4 && surface.length) {const spot=surface[(i*37)%surface.length];x=spot.x;y=spot.y;color=i%3?'#f4fdff':'#b9e9ff';}
+      else if((stage===2 || stage===3) && edge.length) {const spot=edge[(i*13)%edge.length];x=spot.x+spot.side*(3+life*11)+Math.sin(t+p.phase)*2;y=spot.y-life*(stage===2?24:12);color=stage===2?(i%3?'#ff8b42':'#ffce80'):'#ffe6a0';}
       else {x=140+Math.sin(p.phase)*p.radius+(stage===2?Math.sin(t*2+p.phase)*life*13:0);y=158-life*140;if(stage===2)color=i%3?'#ff973d':'#ffdb77';}
-      fg.globalAlpha=stage===4?.2+.65*Math.pow(.5+.5*Math.sin(t*2+p.phase),4):Math.sin(life*Math.PI)*.8;
+      fg.globalAlpha=stage===4?.85*Math.pow(.5+.5*Math.sin(t*1.6+p.phase),12):Math.sin(life*Math.PI)*.65;
       fg.fillStyle=color;fg.strokeStyle=color;fg.lineWidth=.8;
-      if(stage===3) {fg.save();fg.translate(x,y);fg.rotate(p.phase+t*.4);fg.fillRect(-1,-2,2,4);fg.restore();}
-      else if(stage===4) {const r=p.size*3;fg.beginPath();fg.moveTo(x-r,y);fg.lineTo(x+r,y);fg.moveTo(x,y-r);fg.lineTo(x,y+r);fg.stroke();}
+      if(stage===3) {fg.beginPath();fg.arc(x,y,.45+p.size*.32,0,Math.PI*2);fg.fill();if(i%9===0 && surface.length){const spot=surface[(i*19)%surface.length];sparkle(fg,spot.x,spot.y,3.8,'#fff0bd',fg.globalAlpha);}}
+      else if(stage===4) {sparkle(fg,x,y,2.5+p.size*1.6,color,fg.globalAlpha);}
       else if(stage>=5) {fg.beginPath();fg.moveTo(x,y);fg.lineTo(x-(stage===6?Math.cos(p.phase)*9:0),y-(stage===6?Math.sin(p.phase)*7:5));fg.stroke();}
-      else {fg.beginPath();fg.arc(x,y,p.size,0,Math.PI*2);fg.fill();}
+      else {fg.beginPath();fg.arc(x,y,stage===2?p.size*.55:p.size,0,Math.PI*2);fg.fill();}
     }
     fg.globalAlpha=1;
   }
