@@ -3,14 +3,14 @@ const files=['01-000m-initial','02-001m-awakening','04-030m-anger','05-060m-gold
 const palette=[['#e6b944','#ffe6a3'],['#eac44c','#fff1b5'],['#e85657','#ffaaa8'],['#e2b32d','#fff2b5'],['#a7d4f0','#f2f8ff'],['#64d9eb','#d2beff'],['#99d6ff','#f3c5ff']];
 const $=id=>document.getElementById(id);let current=null,oldStage=-1;
 files.forEach(file=>{const img=new Image();img.src=`../assets/character/stages-v1/${file}.png`;});
-[.1,.3,.55,.78,.9].forEach(p=>{const tick=document.createElement('i');tick.style.left=`${p*100}%`;$('ticks').append(tick);});
+[.2,.4,.6,.8].forEach(p=>{const tick=document.createElement('i');tick.style.left=`${p*100}%`;$('ticks').append(tick);});
 function render(s){
  current=s;document.body.dataset.stage=s.stage;document.body.classList.toggle('preview',s.preview);document.body.classList.toggle('reduced',s.reducedMotion);
  document.documentElement.style.setProperty('--accent',palette[s.stage][0]);document.documentElement.style.setProperty('--secondary',palette[s.stage][1]);document.documentElement.style.setProperty('--fill',`${s.fill*100}%`);
  document.documentElement.style.setProperty('--charge',s.fill);if(oldStage!==s.stage){$('pet').src=`../assets/character/stages-v1/${files[s.stage]}.png`;$('pet').alt=names[s.stage];document.body.classList.remove('evolving');requestAnimationFrame(()=>document.body.classList.add('evolving'));oldStage=s.stage;}
  $('stage').textContent=names[s.stage];$('mode').textContent=s.preview?'预览':'';
  $('amount').textContent=s.tokens===null?'—':s.tokens.toLocaleString('zh-CN');
- $('progress').setAttribute('aria-valuetext',s.tokens===null?'用量未知':`已消耗 ${s.tokens} tokens，非线性充能 ${Math.round(s.fill*100)}%`);
+ $('progress').setAttribute('aria-valuetext',s.tokens===null?'用量未知':`已消耗 ${s.tokens} tokens，充能进度 ${Math.round(s.fill*100)}%`);
  if(s.tokens===null)$('progress').removeAttribute('aria-valuenow');else $('progress').setAttribute('aria-valuenow',Math.min(100000000,s.tokens));
  $('status').textContent=s.preview?'预览 · 不计入用量':'';
  $('status').title=[s.lastError,s.updatedAt?`上次同步 ${new Date(s.updatedAt).toLocaleTimeString()}`:'',`日期 ${s.day} · 北京时间 · 本机 Codex 会话记录`].filter(Boolean).join('\n');
