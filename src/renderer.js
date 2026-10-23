@@ -8,14 +8,14 @@ const effects=window.createTokenutEffects($('aura'),$('particles'));
 function render(s){
  effects.update(s.stage,s.reducedMotion);
  if(s.reducedMotion)[$('pet'),$('pet-before')].forEach(img=>img.getAnimations().forEach(a=>a.cancel()));
- current=s;document.body.dataset.stage=s.stage;document.body.classList.toggle('preview',s.preview);document.body.classList.toggle('reduced',s.reducedMotion);
+ current=s;document.body.dataset.stage=s.stage;document.body.classList.toggle('reduced',s.reducedMotion);
  document.documentElement.style.setProperty('--accent',palette[s.stage][0]);document.documentElement.style.setProperty('--secondary',palette[s.stage][1]);document.documentElement.style.setProperty('--fill',`${s.fill*100}%`);
  document.documentElement.style.setProperty('--charge',s.fill);if(oldStage!==s.stage){$('pet-before').src=$('pet').src;$('pet').src=`../assets/character/stages-v1/${files[s.stage]}.png`;$('pet').alt=names[s.stage];[$('pet'),$('pet-before')].forEach(img=>img.getAnimations().forEach(a=>a.cancel()));if(oldStage>=0&&!s.reducedMotion&&!matchMedia('(prefers-reduced-motion: reduce)').matches){$('pet').animate([{opacity:0},{opacity:1}],{duration:20000,easing:'ease-in-out'});$('pet-before').animate([{opacity:1},{opacity:0}],{duration:20000,easing:'ease-in-out'});}oldStage=s.stage;}
- $('stage').textContent=names[s.stage];$('mode').textContent=s.demo?'演示':s.preview?'预览':'';
+ $('stage').textContent=names[s.stage];$('mode').textContent='';
  $('amount').textContent=s.tokens===null?'—':s.tokens.toLocaleString('zh-CN');
  $('progress').setAttribute('aria-valuetext',s.tokens===null?'用量未知':`已消耗 ${s.tokens} tokens，充能进度 ${Math.round(s.fill*100)}%`);
  if(s.tokens===null)$('progress').removeAttribute('aria-valuenow');else $('progress').setAttribute('aria-valuenow',Math.min(100000000,s.tokens));
- $('status').textContent=s.demo?'渐变演示 · 不计入用量':s.preview?'预览 · 不计入用量':'';
+ $('status').textContent='';
  $('status').title=[s.lastError,s.updatedAt?`上次同步 ${new Date(s.updatedAt).toLocaleTimeString()}`:'',`日期 ${s.day} · 北京时间 · 本机 Codex 会话记录`].filter(Boolean).join('\n');
  $('instrument').title=s.tokens===null?'等待本机记录':`今日 ${s.tokens.toLocaleString()} tokens / 100,000,000；含缓存输入，不重复叠加推理 token`;
  $('sync').disabled=s.status==='正在同步';
