@@ -16,7 +16,7 @@ function render(s){
  $('progress').setAttribute('aria-valuetext',s.tokens===null?'用量未知':`已消耗 ${s.tokens} tokens，充能进度 ${Math.round(s.fill*100)}%`);
  if(s.tokens===null)$('progress').removeAttribute('aria-valuenow');else $('progress').setAttribute('aria-valuenow',Math.min(100000000,s.tokens));
  $('status').textContent='';
- $('status').title=[s.lastError,s.updatedAt?`上次同步 ${new Date(s.updatedAt).toLocaleTimeString()}`:'',`日期 ${s.day} · 北京时间 · 本机 Codex 会话记录`].filter(Boolean).join('\n');
+ $('status').title=[s.lastError,s.updatedAt?`上次同步 ${new Date(s.updatedAt).toLocaleTimeString()}`:'',`日期 ${s.day} · 北京时间 · 已选来源的本机会话记录`].filter(Boolean).join('\n');
  $('instrument').title=s.tokens===null?'等待本机记录':`今日 ${s.tokens.toLocaleString()} tokens / 100,000,000；含缓存输入，不重复叠加推理 token`;
  $('sync').disabled=s.status==='正在同步';
 }

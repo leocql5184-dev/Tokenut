@@ -1,7 +1,8 @@
 const {contextBridge,ipcRenderer}=require('electron');
 contextBridge.exposeInMainWorld('tokenut',{
-  chooseSource:()=>ipcRenderer.send('choose-source'),
-  autoSource:()=>ipcRenderer.send('auto-source'),
+  chooseSource:id=>ipcRenderer.send('choose-source',id),
+  autoSource:id=>ipcRenderer.send('auto-source',id),
+  setSource:(id,enabled)=>ipcRenderer.send('set-source',id,enabled),
   history:()=>ipcRenderer.invoke('history'),
   onHistory:fn=>ipcRenderer.on('history',(_,value)=>fn(value)),
   openClient:()=>ipcRenderer.send('open-client'),
