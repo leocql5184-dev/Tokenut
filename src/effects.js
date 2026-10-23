@@ -3,7 +3,7 @@ window.createTokenutEffects = function (back, front) {
   const bg = back.getContext('2d'), fg = front.getContext('2d');
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
   const colors = ['#ffe6a3','#fff1b5','#ffaaa8','#ffd56b','#d5f5ff','#81eaff','#ffcaff'];
-  const counts = [0,3,28,44,22,48,88];
+  const counts = [0,3,14,44,22,48,88];
   const motes = Array.from({length:104}, (_,i)=>({phase:i*2.39996, radius:46+(i*17%32), speed:.3+(i%7)*.07, size:.7+(i%4)*.35}));
   let stage=0, reduced=false, handle=0, last=0;
   function clear() { bg.clearRect(0,0,280,264); fg.clearRect(0,0,280,264); }
@@ -12,7 +12,7 @@ window.createTokenutEffects = function (back, front) {
     points.forEach(([x,y],i)=>i?bg.lineTo(x,y):bg.moveTo(x,y)); bg.closePath(); bg.fill(); bg.globalAlpha=1;
   }
   const pet=document.getElementById('pet');
-  let edge=[], surface=[];
+  let edge=[], surface=[], heatMask=null;
   function samplePet() {
     if(!pet.complete || !pet.naturalWidth) return;
     const mask=document.createElement('canvas'); mask.width=142; mask.height=142;
@@ -21,6 +21,9 @@ window.createTokenutEffects = function (back, front) {
     const w=pet.naturalWidth*scale,h=pet.naturalHeight*scale;
     c.drawImage(pet,(142-w)/2,(142-h)/2,w,h);
     const data=c.getImageData(0,0,142,142).data; edge=[];surface=[];
+    heatMask=document.createElement('canvas');heatMask.width=142;heatMask.height=142;
+    const heat=heatMask.getContext('2d');heat.drawImage(mask,0,0);heat.globalCompositeOperation='source-in';
+    heat.fillStyle='#ff4d1f';heat.fillRect(0,0,142,142);
     for(let y=10;y<133;y+=4) {
       let first=-1,last=-1;
       for(let x=3;x<139;x++) if(data[(y*142+x)*4+3]>210) {
@@ -39,14 +42,10 @@ window.createTokenutEffects = function (back, front) {
   }
   function atmosphere(t) {
     if(stage===2 && edge.length) {
-      // Short translucent heat wisps follow the actual sprite silhouette.
-      for(let i=0;i<18;i++) {
-        const p=edge[(i*7)%edge.length], wave=.5+.5*Math.sin(t*2.1+i*1.8);
-        const h=9+wave*14, x=p.x+p.side*2, y=p.y;
-        const g=bg.createLinearGradient(x,y,x+p.side*8,y-h);
-        g.addColorStop(0,'#ff420000');g.addColorStop(.35,'#ff632a88');g.addColorStop(.7,'#ffc35a99');g.addColorStop(1,'#ffad3600');
-        bg.strokeStyle=g;bg.lineWidth=1.5+wave;bg.lineCap='round';bg.beginPath();bg.moveTo(x,y);
-        bg.bezierCurveTo(x+p.side*11,y-4,x-p.side*4,y-h*.7,x+p.side*6,y-h);bg.stroke();
+      // Diffuse heat follows the real body silhouette; no flame strips or shapes.
+      if(heatMask) {
+        bg.save();bg.globalAlpha=.4+Math.sin(t*1.4)*.07;
+        bg.filter='blur(6px)';bg.drawImage(heatMask,69,22);bg.restore();
       }
     } else if(stage===3 && edge.length) {
       // Gold stays metallic: tiny warm motes and isolated specular highlights.
@@ -111,5 +110,23 @@ window.createTokenutEffects = function (back, front) {
     else { paint(performance.now()); handle=requestAnimationFrame(frame); }
   }
   motion.addEventListener('change',refresh); document.addEventListener('visibilitychange',refresh);
-  return {update(nextStage, nextReduced) { stage=nextStage; reduced=nextReduced; refresh(); }};
+  const previous=[back,front].map(canvas=>{
+    const layer=document.createElement('canvas');layer.width=280;layer.height=264;
+    layer.className='effects-previous';layer.setAttribute('aria-hidden','true');layer.style.opacity=0;
+    canvas.before(layer);return layer;
+  });
+  let initialized=false;
+  return {update(nextStage, nextReduced) {
+    if(initialized && nextStage!==stage && !nextReduced && !motion.matches) {
+      [back,front].forEach((canvas,i)=>{
+        const layer=previous[i];layer.getAnimations().forEach(a=>a.cancel());
+        const c=layer.getContext('2d');c.clearRect(0,0,280,264);c.drawImage(canvas,0,0);
+        layer.animate([{opacity:1},{opacity:0}],{duration:1100,easing:'ease-in-out'});
+        canvas.getAnimations().forEach(a=>a.cancel());
+        canvas.animate([{opacity:0},{opacity:1}],{duration:1100,easing:'ease-in-out'});
+      });
+    }
+    if(nextReduced || motion.matches) [...previous,back,front].forEach(c=>c.getAnimations().forEach(a=>a.cancel()));
+    initialized=true;stage=nextStage; reduced=nextReduced; refresh();
+  }};
 };
