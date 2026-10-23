@@ -36,23 +36,25 @@
 
 | 当天 Token 用量 | 形态 |
 | --- | --- |
-| 0 | 初始黄色 |
+| 0 | 原初之息 |
 | 100万 | 微光觉醒 |
-| 1000万 | 红色愤怒 |
-| 3000万 | 纯金 |
-| 6000万 | 全身镶钻 |
-| 9000万 | 科技充能 |
-| 1亿 | 彩色镭射最终形态 |
+| 1000万 | 赤怒修罗 |
+| 3000万 | 鎏金帝皇 |
+| 6000万 | 万钻神躯 |
+| 9000万 | 量子天尊 |
+| 1亿 | 虹耀超限 |
 
 <p>
-<img src="assets/character/stages-v1/01-000m-initial.png" width="120" alt="1. 初始黄色" />
+<img src="assets/character/stages-v1/01-000m-initial.png" width="120" alt="1. 原初之息" />
 <img src="assets/character/stages-v1/02-001m-awakening.png" width="120" alt="2. 微光觉醒" />
-<img src="assets/character/stages-v1/04-030m-anger.png" width="120" alt="3. 红色愤怒" />
-<img src="assets/character/stages-v1/05-060m-gold.png" width="120" alt="4. 纯金" />
-<img src="assets/character/stages-v1/05-060m-diamond.png" width="120" alt="5. 全身镶钻" />
-<img src="assets/character/stages-v1/06-090m-charging.png" width="120" alt="6. 科技充能" />
-<img src="assets/character/stages-v1/07-100m-ultimate.png" width="120" alt="7. 彩色镭射" />
+<img src="assets/character/stages-v1/04-030m-anger.png" width="120" alt="3. 赤怒修罗" />
+<img src="assets/character/stages-v1/05-060m-gold.png" width="120" alt="4. 鎏金帝皇" />
+<img src="assets/character/stages-v1/05-060m-diamond.png" width="120" alt="5. 万钻神躯" />
+<img src="assets/character/stages-v1/06-090m-charging.png" width="120" alt="6. 量子天尊" />
+<img src="assets/character/stages-v1/07-100m-ultimate.png" width="120" alt="7. 虹耀超限" />
 </p>
+
+第四至第七阶段分别带有金屑光晕、晶钻闪芒、量子轨道和虹彩流光；可在菜单中开启“减少动态效果”，保留静态光晕。
 
 七张 PNG 均随程序附带，也可在解压后的 `assets/character/stages-v1/` 文件夹查看，不需要另外下载。
 

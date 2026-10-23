@@ -9,7 +9,7 @@ let connection={state:'checking',message:'正在查找本机 Codex 记录',path:
 let client;
 let win, stateFile, pollTimer, tickTimer, saved = {}, preview = null, busy = false;
 let status = '正在连接 Codex', lastError = '', day = dayOf(new Date());
-const names=['初始形态','微光觉醒','愤怒模式','纯金形态','钻石形态','科技充能','最终形态'];
+const names=['原初之息','微光觉醒','赤怒修罗','鎏金帝皇','万钻神躯','量子天尊','虹耀超限'];
 function persist() {
   try { fs.mkdirSync(path.dirname(stateFile),{recursive:true}); fs.writeFileSync(stateFile+'.tmp',JSON.stringify(saved,null,2)); fs.renameSync(stateFile+'.tmp',stateFile); }
   catch { lastError='本地记录保存失败'; }

@@ -44,3 +44,13 @@ body.reduced #fill::after{animation:none}body.reduced #thumb{transition:none}
 #sync{top:5px;right:7px}#menu{top:-4px;left:-4px}
 #character{top:22px}
 #character{-webkit-app-region:no-drag;touch-action:none}#character:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:12px}
+
+/* Stage atmosphere stays behind the pet; foreground motes never intercept input. */
+#aura{position:absolute;inset:0;pointer-events:none}
+body[data-stage="3"] #pet{filter:drop-shadow(0 3px 6px #e9b33a88)}
+body[data-stage="4"] #pet{filter:drop-shadow(0 3px 7px #afdfff99)}
+body[data-stage="5"] #pet{filter:drop-shadow(0 3px 8px #7fd8ff99)}
+body[data-stage="6"] #pet{filter:drop-shadow(0 3px 9px #dda1ffbb)}
+body[data-stage="3"] #fill::after{background-size:30px 24px;opacity:.8}
+body[data-stage="5"] #fill::after{background-size:18px 24px}
+body[data-stage="6"] #fill::after{background-size:12px 24px}
