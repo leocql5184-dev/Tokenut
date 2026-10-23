@@ -1,6 +1,6 @@
 // Two bounded layers keep atmospheric light behind the pet and sparks in front.
 window.createTokenutEffects = function (back, front) {
-  const bg = back.getContext('2d'), fg = front.getContext('2d');
+  let bg = back.getContext('2d'), fg = front.getContext('2d');
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
   const colors = ['#ffe6a3','#fff1b5','#ffaaa8','#ffd56b','#d5f5ff','#81eaff','#ffcaff'];
   const counts = [0,3,14,44,22,48,88];
@@ -78,7 +78,7 @@ window.createTokenutEffects = function (back, front) {
     }
   }
   function paint(time, still=false) {
-    clear(); const t=time/1000; atmosphere(t);
+    clear(); const t=time/4000; atmosphere(t);
     if(still) return;
     for(let i=0;i<counts[stage];i++) {
       const p=motes[i], life=(t*p.speed*.5+i*.137)%1;
@@ -97,17 +97,28 @@ window.createTokenutEffects = function (back, front) {
     }
     fg.globalAlpha=1;
   }
+  let outgoing=null;
+  function paintLayers(time) {
+    paint(time);
+    if(!outgoing) return;
+    if(time-outgoing.start>=20000){outgoing=null;return;}
+    const active={bg,fg,stage,edge,surface,heatMask};
+    bg=previous[0].getContext('2d');fg=previous[1].getContext('2d');
+    stage=outgoing.stage;edge=outgoing.edge;surface=outgoing.surface;heatMask=outgoing.heatMask;
+    paint(time);
+    ({bg,fg,stage,edge,surface,heatMask}=active);
+  }
   function frame(time) {
     handle=0;
     if(document.hidden || reduced || motion.matches) return;
-    if(time-last>=33) { paint(time); last=time; }
+    if(time-last>=33) { paintLayers(time); last=time; }
     handle=requestAnimationFrame(frame);
   }
   function refresh() {
     cancelAnimationFrame(handle); handle=0;
     if(document.hidden) { clear(); return; }
     if(reduced || motion.matches) paint(0,true);
-    else { paint(performance.now()); handle=requestAnimationFrame(frame); }
+    else { paintLayers(performance.now()); handle=requestAnimationFrame(frame); }
   }
   motion.addEventListener('change',refresh); document.addEventListener('visibilitychange',refresh);
   const previous=[back,front].map(canvas=>{
@@ -118,15 +129,16 @@ window.createTokenutEffects = function (back, front) {
   let initialized=false;
   return {update(nextStage, nextReduced) {
     if(initialized && nextStage!==stage && !nextReduced && !motion.matches) {
+      outgoing={stage,edge,surface,heatMask,start:performance.now()};
       [back,front].forEach((canvas,i)=>{
         const layer=previous[i];layer.getAnimations().forEach(a=>a.cancel());
         const c=layer.getContext('2d');c.clearRect(0,0,280,264);c.drawImage(canvas,0,0);
-        layer.animate([{opacity:1},{opacity:0}],{duration:1100,easing:'ease-in-out'});
+        layer.animate([{opacity:1},{opacity:0}],{duration:20000,easing:'ease-in-out'});
         canvas.getAnimations().forEach(a=>a.cancel());
-        canvas.animate([{opacity:0},{opacity:1}],{duration:1100,easing:'ease-in-out'});
+        canvas.animate([{opacity:0},{opacity:1}],{duration:20000,easing:'ease-in-out'});
       });
     }
-    if(nextReduced || motion.matches) [...previous,back,front].forEach(c=>c.getAnimations().forEach(a=>a.cancel()));
+    if(nextReduced || motion.matches) {outgoing=null;[...previous,back,front].forEach(c=>c.getAnimations().forEach(a=>a.cancel()));}
     initialized=true;stage=nextStage; reduced=nextReduced; refresh();
   }};
 };

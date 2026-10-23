@@ -1,6 +1,6 @@
 {
   "name": "tokenut",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "private": true,
   "description": "Seven-stage daily token desktop companion",
   "main": "src/main.cjs",

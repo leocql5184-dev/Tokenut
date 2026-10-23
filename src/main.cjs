@@ -52,7 +52,7 @@ async function sync() {
 function stopDemo() { clearInterval(demoTimer);demoTimer=null; }
 function startDemo() {
   stopDemo();let step=0;preview=thresholds[0];
-  demoTimer=setInterval(()=>{step++;if(step>=thresholds.length){stopDemo();preview=null;}else preview=thresholds[step];publish();},3500);
+  demoTimer=setInterval(()=>{step++;if(step>=thresholds.length){stopDemo();preview=null;}else preview=thresholds[step];publish();},24000);
   win.show();publish();
 }
 function contextMenu() {
@@ -62,7 +62,7 @@ function contextMenu() {
     {label:'连接 Codex / 选择记录目录',click:()=>{openClient();chooseSource();}},
     {label:'立即同步 Codex',enabled:!busy,click:sync},
     {type:'separator'},
-    {label:'播放七阶段渐变（约25秒）',click:startDemo},
+    {label:'播放七阶段渐变（约3分钟）',click:startDemo},
     {label:'预览七种形态',submenu:names.map((name,i)=>({label:`${i+1} · ${name} (${thresholds[i]/10000}万)`,type:'radio',checked:preview===thresholds[i],click:()=>{stopDemo();preview=thresholds[i];publish();}}))},
     {label:'退出预览，显示真实用量',enabled:preview!==null,click:()=>{stopDemo();preview=null;publish();}},
     {type:'separator'},
