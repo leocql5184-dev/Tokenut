@@ -1,0 +1,46 @@
+:root{color-scheme:dark;--accent:#f4cb56;--secondary:#ffe7a0;--fill:0%;font-family:"Segoe UI","Microsoft YaHei",sans-serif;color:#f5f1e9;font-synthesis:none}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent;user-select:none}::selection{background:#806c30;color:white}
+#companion{position:relative;width:340px;height:420px;padding:0 20px 16px}
+#character{position:absolute;left:28px;top:4px;width:284px;height:284px;-webkit-app-region:drag;cursor:grab;animation:breathe 5s ease-in-out infinite;transform-origin:50% 100%}
+#pet{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 7px 5px #00000038)}
+#particles{position:absolute;inset:0;pointer-events:none}
+#instrument{position:absolute;left:20px;right:20px;bottom:16px;background:#191b22f5;border-radius:16px;padding:13px 17px 11px;box-shadow:0 8px 18px #00000035}
+.topline,.footline{display:flex;align-items:center;gap:8px}.topline{height:22px}#stage{font-size:12px;color:var(--secondary);font-weight:600}#mode{margin-left:auto;font-size:11px;color:#c4c5cf}button{display:grid;place-items:center;border:0;background:transparent;color:#bfc2ce;padding:3px;width:24px;height:24px;border-radius:5px;cursor:pointer}button:hover{background:#ffffff1c;color:white}button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}button:disabled{opacity:.4;cursor:wait}svg{width:18px;height:18px;fill:currentColor}#sync svg{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.readout{display:flex;align-items:baseline;gap:8px;margin:6px 0 13px;font-variant-numeric:tabular-nums}.readout strong{font-size:27px;font-weight:650;line-height:1.1;letter-spacing:-.025em}.readout>span{font-size:12px;color:#c4c5cf}.readout small{font-size:11px;margin-left:3px}
+#progress{position:relative;height:9px;background:#393c46;border-radius:5px;isolation:isolate}#fill{position:absolute;inset:0 auto 0 0;width:100%;transform:scaleX(var(--charge,0));transform-origin:left;border-radius:5px;background:linear-gradient(90deg,var(--accent),var(--secondary));transition:transform .8s cubic-bezier(.16,1,.3,1),background .5s;box-shadow:0 0 10px color-mix(in srgb,var(--accent),transparent 60%)}
+#ticks{position:absolute;inset:0;display:block}#ticks i{position:absolute;top:2px;width:1px;height:5px;background:#17191d80}.footline{margin-top:9px;height:20px}#status{font-size:11px;color:#c4c5cf;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#sync{width:20px;height:20px}#sync svg{width:13px;height:13px}
+body[data-stage="6"] #fill{background:linear-gradient(90deg,#ff757f,#ffc84d,#77f5b5,#68dfff,#be8dff,#ff84d5);background-size:200% 100%;animation:spectrum 4s linear infinite}
+body.preview #mode{color:#ffdc97}body.evolving #pet{animation:evolve .75s ease-out}body.reduced #character,body.reduced #fill,body.reduced #pet{animation:none!important}body.reduced #fill{transition:none}
+@keyframes breathe{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}@keyframes spectrum{to{background-position:200% 0}}@keyframes evolve{0%{filter:brightness(1.65) drop-shadow(0 0 12px var(--accent))}100%{filter:brightness(1) drop-shadow(0 7px 5px #00000038)}}
+@media(prefers-reduced-motion:reduce){#character,#fill,#pet{animation:none!important}#fill{transition:none}}
+
+/* Compact desktop instrument: reference-sized bar, half-size character. */
+:root{color-scheme:light;color:#38363e}
+#companion{width:280px;height:264px;padding:0}
+#character{left:69px;top:2px;width:142px;height:142px}
+#instrument{left:12px;right:12px;bottom:12px;height:108px;padding:10px 12px 8px;background:#fffefa;border:1px solid #e7e5e8;border-radius:17px;box-shadow:0 4px 12px #00000012}
+.topline{height:18px;justify-content:center;position:relative;gap:5px}
+#stage{color:color-mix(in srgb,var(--accent) 65%,#492d21);font-size:12px}#mode{margin-left:0;font-size:11px;color:#77727c}
+#menu{position:absolute;left:-5px;top:-3px;color:#89838e}button:hover{background:#eeeaf0;color:#37313d}
+.readout{justify-content:center;gap:4px;margin:3px 0 12px;color:#78727b;line-height:15px}.readout strong{font-size:12px;letter-spacing:0;font-weight:500}.readout>span,.readout small{font-size:11px;color:#78727b}
+#progress{height:24px;border-radius:15px;background:#e7e5e8;margin:0 0 0}
+#fill{border-radius:15px;box-shadow:none;overflow:hidden}
+#thumb{position:absolute;z-index:3;width:28px;height:28px;top:-2px;left:clamp(0px,calc(var(--fill) - 14px),calc(100% - 28px));border-radius:50%;background:#fff;box-shadow:0 2px 5px #00000016;transition:left .8s cubic-bezier(.16,1,.3,1)}
+#ticks i{top:10px;width:4px;height:4px;border-radius:50%;background:#a39da866}
+.footline{height:13px;margin-top:6px}#status{font-size:11px;color:#79727c}#sync{position:absolute;right:9px;top:8px;color:#89838e}
+body.preview #mode{color:#8f651c}body[data-stage="4"] #fill{background:linear-gradient(100deg,#b8d1e5,#fbffff,#a8c7e2)}
+#fill::after{content:'';position:absolute;inset:0;background-image:radial-gradient(circle at 20% 30%,#fff9 0 1px,transparent 2px),radial-gradient(circle at 60% 75%,#fffb 0 1px,transparent 2px),radial-gradient(circle at 85% 40%,#fff9 0 1px,transparent 2px);background-size:45px 24px;animation:sparks 3s linear infinite;opacity:.4}
+body[data-stage="4"] #fill::after,body[data-stage="5"] #fill::after,body[data-stage="6"] #fill::after{background-size:24px 24px;opacity:1}
+@keyframes sparks{to{background-position:45px 0}}
+body.reduced #fill::after{animation:none}body.reduced #thumb{transition:none}
+@media(prefers-reduced-motion:reduce){#fill::after{animation:none}#thumb{transition:none}}
+/* Smaller progress enclosure; preserve the half-size character. */
+#instrument{left:30px;right:30px;height:88px;padding:7px 10px 6px;border-radius:14px}
+.topline{height:16px}#stage{font-size:11px}#mode{font-size:11px}
+.readout{margin:2px 0 8px;gap:3px}.readout strong{font-size:11px}
+#progress{height:20px;border-radius:12px}#fill{border-radius:12px}
+#thumb{width:24px;height:24px;left:clamp(0px,calc(var(--fill) - 12px),calc(100% - 24px))}
+#ticks i{top:8px}.footline{margin-top:4px;height:12px}
+#sync{top:5px;right:7px}#menu{top:-4px;left:-4px}
+#character{top:22px}
+#character{-webkit-app-region:no-drag;touch-action:none}#character:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:12px}

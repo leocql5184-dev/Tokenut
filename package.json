@@ -1,0 +1,17 @@
+{
+  "name": "tokenut",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Seven-stage daily token desktop companion",
+  "main": "src/main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test tests/*.test.cjs",
+    "pack": "node scripts/package.cjs",
+    "release": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Release.ps1"
+  },
+  "devDependencies": {
+    "@electron/packager": "^20.3.0",
+    "electron": "45.0.0"
+  }
+}

@@ -1,0 +1,3 @@
+const {test}=require('node:test');const assert=require('node:assert/strict');const {reconcile}=require('../src/history.cjs');
+test('midnight archives yesterday and opens today without losing usage',()=>{const r=reconcile({'2026-10-22':{tokens:123,source:'local'}},{},'2026-10-23');assert.equal(r['2026-10-22'].closed,true);assert.equal(r['2026-10-22'].tokens,123);assert.equal(r['2026-10-23'].tokens,0);});
+test('late events correct archive, log removal never lowers it',()=>{let r=reconcile({}, {'2026-10-22':123},'2026-10-23');r=reconcile(r,{'2026-10-22':150},'2026-10-23');assert.equal(r['2026-10-22'].tokens,150);r=reconcile(r,{'2026-10-22':2},'2026-10-23');assert.equal(r['2026-10-22'].tokens,150);});
